@@ -16,6 +16,7 @@ const Home = () => {
   const [message, setMessage] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
   const [onlineUsers, setOnlineUsers] = useState<User[]>([]);
+  const [chatHistory, setChatHistory] = useState<Message[]>([]);
 
   useEffect(() => {
     socket.on("welcome", (welcomeMessage) => {
@@ -31,11 +32,26 @@ const Home = () => {
         console.log("A new user connected/disconnected");
         setOnlineUsers(onlineUsersList);
       });
+
+      socket.on("newMessage", (newMessage) => {
+        console.log(newMessage);
+        setChatHistory([...chatHistory, newMessage.message]);
+      });
     });
   });
 
   const submitUsername = () => {
     socket.emit("setUsername", { username });
+  };
+
+  const sendMessage = () => {
+    const newMessage: Message = {
+      sender: username,
+      text: message,
+      createdAt: new Date().toLocaleString("en-US"),
+    };
+    socket.emit("sendMessage", { message: newMessage });
+    setChatHistory([...chatHistory, newMessage]);
   };
 
   return (
@@ -60,11 +76,19 @@ const Home = () => {
           </Form>
           {/* )} */}
           {/* MIDDLE AREA: CHAT HISTORY */}
-          <ListGroup></ListGroup>
+          <ListGroup>
+            {chatHistory.map((message, index) => (
+              <ListGroup.Item key={index}>
+                {<strong>{message.sender}</strong>} | {message.text} at{" "}
+                {message.createdAt}
+              </ListGroup.Item>
+            ))}
+          </ListGroup>
           {/* BOTTOM AREA: NEW MESSAGE */}
           <Form
             onSubmit={(e) => {
               e.preventDefault();
+              sendMessage();
             }}
           >
             <FormControl
