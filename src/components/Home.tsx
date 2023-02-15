@@ -32,11 +32,10 @@ const Home = () => {
         console.log("A new user connected/disconnected");
         setOnlineUsers(onlineUsersList);
       });
-
-      socket.on("newMessage", (newMessage) => {
-        console.log(newMessage);
-        setChatHistory([...chatHistory, newMessage.message]);
-      });
+    });
+    socket.on("newMessage", (newMessage) => {
+      console.log(newMessage);
+      setChatHistory([...chatHistory, newMessage.message]);
     });
   });
 
