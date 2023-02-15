@@ -15,7 +15,11 @@ const Home = () => {
   const [username, setUsername] = useState("");
   const [message, setMessage] = useState("");
 
-  useEffect(() => {});
+  useEffect(() => {
+    socket.on("welcome", (welcomeMessage) => {
+      console.log(welcomeMessage);
+    });
+  });
 
   return (
     <Container fluid>
